@@ -1,15 +1,11 @@
 require './const'
 
-
-
-
 class Computer
     attr_accessor :computer_choice
     
 
     def initialize
-        @computer_choice = ["green", "purple", "yellow", "red"]
-        #Colors::COLORS.sample(4)
+        @computer_choice = Constants::COLORS.sample(4)
     end 
 
     def exact_match(arr)
@@ -32,17 +28,5 @@ class Computer
         color_match
     end 
 
-    def feedback(arr)
-        return [exact_match(arr), color_match(arr) - exact_match(arr)]
-    end 
-
-
 end 
 
-comp = Computer.new
-
-
-
-
-
-p comp.feedback(["yellow", "blue", "green", "red"])

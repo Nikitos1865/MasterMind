@@ -17,14 +17,12 @@ class Board
     def set_row(num, arr)
         board_arr[num] = arr
     end 
-
-    def display_board(num)
-        for num in 0..num do
-            p get_row(num)
-        end 
-    end 
 end 
  
+
+board = Board.new
+
+
 
 
 
