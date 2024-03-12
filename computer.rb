@@ -1,7 +1,7 @@
 require './const'
 
 class Computer
-    attr_accessor :computer_choice
+    attr_accessor :computer_choice, :computer_guess
     
 
     def initialize
@@ -26,6 +26,10 @@ class Computer
             end
         end 
         color_match
+    end 
+
+    def initial_guess 
+        computer_guess = Constants::COLORS.sample(4)
     end 
 
 end 
