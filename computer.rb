@@ -1,12 +1,13 @@
 require './const'
 
 class Computer
-    attr_accessor :computer_choice, :guess
+    attr_accessor :computer_choice, :guess, :points 
     
 
     def initialize
         @computer_choice = Constants::COLORS.sample(4)
         @guess = []
+        @points = 0
     end 
 
     def exact_match(arr, arr2)

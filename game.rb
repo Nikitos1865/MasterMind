@@ -33,6 +33,7 @@ include Constants
         if valid_guess?(guess)
             board.set_row(12-player.guesses_left, guess)
             player.guesses_left -= 1
+            display_board(11-player.guesses_left)
             return 0
         else puts "Invalid guess, the guess must from the set colors"
             return 1
@@ -69,17 +70,22 @@ include Constants
             else puts "Invalid code, must be of the colors here: #{Constants::COLORS}"  
             end 
         end 
+        b
     end 
     
-    def computer_guesses(arr)
+    def computer_round(arr)
         guesses = 11
         computer.initial_guess
         while guesses >= 0 && computer.exact_match(arr, computer.guess) != 4
-            p computer_guess(computer_guess(arr)) 
-            #p board.get_row(11-guesses)
-            guesses -= 1 
+            puts "Guess # #{12-guesses}: ".chomp+"#{computer_guess(computer_guess(arr))}"
+            guesses -= 1  
         end 
-        puts guesses
+        player.points =+ 12-guesses
+         if guesses > 0 
+            puts "The computer has guessed your code in #{11-guesses} tries, you get #{11-guesses} points"
+         else puts "The computer lost the round, you get 12 points"
+         end
+         player.points += 12-guesses
     end 
 
     def computer_guess(arr_to_guess)
@@ -92,11 +98,57 @@ include Constants
         computer.guess
     end 
 
+    def computer_round_output(num)
+        if num > 11
+            puts "The computer has run out of guesses"
+        else puts "The computer has guessed your code in #{num} guesses"
+        end
+    end
+
+    def flip_coin
+        if rand < 0.5
+            @code_breaker = player
+            puts "The code breaker will first be the player"
+        else
+            @code_breaker = computer
+            puts "The code breaker will first be the computer"
+        end
+    end 
+
+    def player_round
+        player.guesses_left = 12
+        while player.guesses_left > 0 && computer.exact_match(board.get_row(11-player.guesses_left), computer.computer_choice) != 4
+            player_turn
+        end
+        if player.guesses_left > 0 
+            puts "You guessed correctly! The computer gets #{12-player.guesses_left} points"
+        else puts "You lost, the computer gets 12 points"
+        end
+        computer.points += 13-player.guesses_left
+    end 
+    
+    def play
+        flip_coin
+        while computer.points <= 12 || player.points <= 12
+            if code_breaker == player
+                @code_breaker = computer
+                puts "The code breaker is now the player"
+                player_round
+            else
+                @code_breaker = player
+                puts "It's the computer's turn now... Make the code!"
+                computer_round(player_makes_code)
+            end
+        end
+        
+    end 
 
 
 end 
 
 game = Game.new("Bibo")
+
+game.play
 
 =begin
 #game.computer_guesses(['red', 'blue', 'green', 'yellow'])
@@ -127,7 +179,7 @@ p game.computer.set_guess_index(2, "green")
 p game.computer.set_guess_index(3, "purple")
 =end
 
-game.computer_guesses(['red', 'blue', 'green', 'yellow'])
+puts game.flip_coin
 
 #12.times {p game.computer_guess(game.computer_guess(['red', 'blue', 'green', 'yellow']))}
 
