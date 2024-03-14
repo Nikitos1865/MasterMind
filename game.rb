@@ -80,12 +80,11 @@ include Constants
             puts "Guess # #{12-guesses}: ".chomp+"#{computer_guess(computer_guess(arr))}"
             guesses -= 1  
         end 
-        player.points =+ 12-guesses
          if guesses > 0 
             puts "The computer has guessed your code in #{11-guesses} tries, you get #{11-guesses} points"
          else puts "The computer lost the round, you get 12 points"
          end
-         player.points += 12-guesses
+         player.points += (11-guesses)
     end 
 
     def computer_guess(arr_to_guess)
@@ -124,23 +123,34 @@ include Constants
             puts "You guessed correctly! The computer gets #{12-player.guesses_left} points"
         else puts "You lost, the computer gets 12 points"
         end
-        computer.points += 13-player.guesses_left
+        computer.points += 12-player.guesses_left
+    end 
+
+    def win_statement
+        if player.points >= 12 
+            puts "The player wins!"
+        else
+            puts "The computer wins, beware the butlerian jihad"
+        end
     end 
     
     def play
+        show_colors
         flip_coin
-        while computer.points <= 12 || player.points <= 12
+        while computer.points < 12 && player.points < 12
             if code_breaker == player
                 @code_breaker = computer
                 puts "The code breaker is now the player"
                 player_round
+                break if player.points >= 12
             else
                 @code_breaker = player
                 puts "It's the computer's turn now... Make the code!"
                 computer_round(player_makes_code)
+                break if computer.points >= 12
             end
         end
-        
+        win_statement
     end 
 
 
@@ -179,7 +189,6 @@ p game.computer.set_guess_index(2, "green")
 p game.computer.set_guess_index(3, "purple")
 =end
 
-puts game.flip_coin
 
 #12.times {p game.computer_guess(game.computer_guess(['red', 'blue', 'green', 'yellow']))}
 
