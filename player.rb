@@ -3,8 +3,7 @@
 class Player 
     attr_accessor :name, :guesses_left, :points, :code
 
-    def initialize(name)
-        @name = name
+    def initialize
         @guesses_left = 12
         @points = 0
         @code = []

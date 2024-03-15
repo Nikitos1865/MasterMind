@@ -8,9 +8,9 @@ include Constants
 
     attr_accessor :computer, :board, :player, :code_breaker
 
-    def initialize(name)
+    def initialize
         @board = Board.new
-        @player = Player.new(name)
+        @player = Player.new
         @computer = Computer.new
         @code_breaker = player 
 
@@ -23,8 +23,9 @@ include Constants
         end 
     end 
 
-    def show_colors
-        puts "The colors you may choose for your guess are as follows: "
+    def welcome
+        puts "Welcome to Mastermind!"
+        puts "The colors you may choose for your combinations are as follows: "
         puts "red, blue, yellow, green, purple, orange"
     end
     
@@ -35,7 +36,7 @@ include Constants
             player.guesses_left -= 1
             display_board(11-player.guesses_left)
             return 0
-        else puts "Invalid guess, the guess must from the set colors"
+        else puts "Invalid code, must be of the colors here: #{Constants::COLORS}"
             return 1
         end
     end 
@@ -107,98 +108,58 @@ include Constants
     def flip_coin
         if rand < 0.5
             @code_breaker = player
-            puts "The code breaker will first be the player"
         else
             @code_breaker = computer
-            puts "The code breaker will first be the computer"
+        end
+    end 
+
+    def player_end_round
+        if player.guesses_left > 0 
+            puts "You guessed correctly! The computer gets #{12-player.guesses_left} points"
+        else puts "You lost, the computer gets 12 points"
         end
     end 
 
     def player_round
         player.guesses_left = 12
+        computer.computer_choice = Constants::COLORS.sample(4)
         while player.guesses_left > 0 && computer.exact_match(board.get_row(11-player.guesses_left), computer.computer_choice) != 4
             player_turn
         end
-        if player.guesses_left > 0 
-            puts "You guessed correctly! The computer gets #{12-player.guesses_left} points"
-        else puts "You lost, the computer gets 12 points"
-        end
+        player_end_round
         computer.points += 12-player.guesses_left
     end 
 
     def win_statement
-        if player.points >= 12 
+        if player.points >= 24 
             puts "The player wins!"
-        else
-            puts "The computer wins, beware the butlerian jihad"
+        elsif computer.points >= 24
+            puts "The computer wins, beware the butlerian jihad!!!"
+        else puts 'draw'
         end
     end 
+
+    def fullgame
+        if code_breaker == player
+            @code_breaker = computer
+            puts "The code breaker is now the player, guess the code"
+            player_round
+        else
+            @code_breaker = player
+            puts "It's the computer's turn to guess now... Make the code!"
+            computer_round(player_makes_code)
+        end
+    end
     
     def play
-        show_colors
+        welcome
         flip_coin
-        while computer.points < 12 && player.points < 12
-            if code_breaker == player
-                @code_breaker = computer
-                puts "The code breaker is now the player"
-                player_round
-                break if player.points >= 12
-            else
-                @code_breaker = player
-                puts "It's the computer's turn now... Make the code!"
-                computer_round(player_makes_code)
-                break if computer.points >= 12
-            end
+        while computer.points < 24 && player.points < 24
+            fullgame
         end
         win_statement
     end 
 
 
 end 
-
-game = Game.new("Bibo")
-
-game.play
-
-=begin
-#game.computer_guesses(['red', 'blue', 'green', 'yellow'])
-
-#p game.computer.exact_match_index(['red', 'blue', 'green', 'yellow'],['red', 'green', 'purple', 'yellow'])
-
-#p game.computer.set_guess_index(0,"blue")
-#p game.computer.set_guess_index(1, "red")
-p game.computer.set_guess_index(2, "green")
-p game.computer.set_guess_index(3, "purple")
-
-p game.computer.guess
-
-p  game.computer.exact_match_index(['red', 'blue', 'green', 'yellow'], game.computer.guess)
-
-players_code = ['red', 'blue', 'green', 'yellow']
-
-game.computer.exact_match_index(players_code, game.computer.guess)[0].each do |index|
-    game.computer.set_guess_index(index, players_code[index])
-end 
-game.computer.exact_match_index(players_code, game.computer.guess)[1].each do |index|
-    game.computer.set_guess_index(index, Constants::COLORS.sample(1) )
-end
-
-p game.computer.set_guess_index(0,"blue")
-p game.computer.set_guess_index(1, "red")
-p game.computer.set_guess_index(2, "green")
-p game.computer.set_guess_index(3, "purple")
-=end
-
-
-#12.times {p game.computer_guess(game.computer_guess(['red', 'blue', 'green', 'yellow']))}
-
-
-
-
-
-#puts game.computer_guesses(['red', 'blue', 'green', 'yellow'])
-
-
-
-#Exact Matches: #{@computer.exact_match(@board.get_row(num))}, Color Matches: #{@board.color_match(@board.get_row(num))}"
 
